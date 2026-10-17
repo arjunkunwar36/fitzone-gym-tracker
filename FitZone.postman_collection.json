@@ -1,0 +1,183 @@
+{
+  "info": {
+    "name": "FitZone Gym Tracker API",
+    "description": "Import into Postman. Run 'Create Member' first, then 'Log Workout' - ids are saved automatically into collection variables.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8082" },
+    { "key": "memberId", "value": "" },
+    { "key": "workoutId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": { "method": "GET", "url": "{{baseUrl}}/health" }
+        }
+      ]
+    },
+    {
+      "name": "Members",
+      "item": [
+        {
+          "name": "Create Member",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('memberId', pm.response.json().id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sita Gurung\",\n  \"email\": \"sita.gurung@example.com\",\n  \"age\": 24,\n  \"plan\": \"PREMIUM\"\n}"
+            },
+            "url": "{{baseUrl}}/api/members"
+          }
+        },
+        {
+          "name": "Get All Members",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/members" }
+        },
+        {
+          "name": "Get Member By Id",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/members/{{memberId}}" }
+        },
+        {
+          "name": "Update Member",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sita Gurung\",\n  \"email\": \"sita.gurung@example.com\",\n  \"age\": 25,\n  \"plan\": \"STANDARD\",\n  \"active\": true\n}"
+            },
+            "url": "{{baseUrl}}/api/members/{{memberId}}"
+          }
+        },
+        {
+          "name": "Search Members By Name",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/members/search?name=sita",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "members", "search"],
+              "query": [{ "key": "name", "value": "sita" }]
+            }
+          }
+        },
+        {
+          "name": "Get Members By Plan",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/members/plan/PREMIUM" }
+        },
+        {
+          "name": "Member Workout Summary",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/members/{{memberId}}/summary" }
+        },
+        {
+          "name": "Create Member - Validation Error (demo)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"email\": \"not-an-email\",\n  \"age\": 5\n}"
+            },
+            "url": "{{baseUrl}}/api/members"
+          }
+        },
+        {
+          "name": "Delete Member",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/members/{{memberId}}" }
+        }
+      ]
+    },
+    {
+      "name": "Workouts",
+      "item": [
+        {
+          "name": "Log Workout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('workoutId', pm.response.json().id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"memberId\": \"{{memberId}}\",\n  \"exerciseType\": \"Cardio\",\n  \"durationMinutes\": 45,\n  \"caloriesBurned\": 380,\n  \"workoutDate\": \"2026-10-15\",\n  \"notes\": \"Treadmill intervals\"\n}"
+            },
+            "url": "{{baseUrl}}/api/workouts"
+          }
+        },
+        {
+          "name": "Get All Workouts",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/workouts" }
+        },
+        {
+          "name": "Get Workout By Id",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/workouts/{{workoutId}}" }
+        },
+        {
+          "name": "Update Workout",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"memberId\": \"{{memberId}}\",\n  \"exerciseType\": \"Strength\",\n  \"durationMinutes\": 60,\n  \"caloriesBurned\": 420,\n  \"workoutDate\": \"2026-10-15\",\n  \"notes\": \"Upper body day\"\n}"
+            },
+            "url": "{{baseUrl}}/api/workouts/{{workoutId}}"
+          }
+        },
+        {
+          "name": "Get Workouts By Member",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/workouts/member/{{memberId}}" }
+        },
+        {
+          "name": "Get Workouts By Exercise Type",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/workouts/type/Cardio" }
+        },
+        {
+          "name": "Log Workout - Unknown Member (demo 404)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"memberId\": \"000000000000000000000000\",\n  \"exerciseType\": \"Yoga\",\n  \"durationMinutes\": 30,\n  \"caloriesBurned\": 120\n}"
+            },
+            "url": "{{baseUrl}}/api/workouts"
+          }
+        },
+        {
+          "name": "Delete Workout",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/workouts/{{workoutId}}" }
+        }
+      ]
+    }
+  ]
+}
